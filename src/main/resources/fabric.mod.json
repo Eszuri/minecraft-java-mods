@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "stackable_items",
+	"version": "${version}",
+	"name": "Stackable Items",
+	"description": "Make any item stackable and freely set the maximum stack size.",
+	"authors": [
+		"Lieval"
+	],
+	"contact": {
+		"sources": "https://github.com/Eszuri/stackable-items",
+		"issues": "https://github.com/Eszuri/stackable-items/issues",
+		"homepage": "https://github.com/Eszuri/stackable-items"
+	},
+	"license": "MIT",
+	"icon": "assets/stackable_items/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.lieval.stackables.StackableItemsMod"
+		],
+		"client": [
+			"com.lieval.stackables.client.StackableItemsClientMod"
+		],
+		"modmenu": [
+			"com.lieval.stackables.client.StackableModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"stackable_items.mixins.json",
+		{
+			"config": "stackable_items.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25"
+	},
+	"recommends": {
+		"modmenu": "*"
+	}
+}

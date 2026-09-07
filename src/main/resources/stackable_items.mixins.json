@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"package": "com.lieval.stackables.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"BaseContainerBlockEntityMixin",
+		"DataComponentsMixin",
+		"InventoryMixin",
+		"ItemMixin",
+		"ItemStackMixin",
+		"ItemStackTemplateMixin",
+		"SimpleContainerMixin",
+		"SlotMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

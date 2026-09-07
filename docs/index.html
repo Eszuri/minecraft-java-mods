@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stackable Items - Fabric Mod for Minecraft Java</title>
+    <meta name="description"
+        content="A Minecraft Fabric mod that removes item stack limits and sets custom max stack sizes with vanilla-safe storage fallback.">
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface-hover: #1c2128;
+            --surface-raised: #21262d;
+            --border: #30363d;
+            --border-muted: #21262d;
+            --text: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent: #238636;
+            --accent-hover: #2ea043;
+            --accent-text: #3fb950;
+            --accent-soft: rgba(46, 160, 67, 0.15);
+            --warn-border: #9e6a03;
+            --warn-bg: rgba(187, 128, 9, 0.1);
+            --warn-text: #f2cc60;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+            --radius: 6px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navbar */
+        nav {
+            border-bottom: 1px solid var(--border);
+            background: rgba(13, 17, 23, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .brand img {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.15s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #ffffff;
+            border-color: rgba(240, 246, 252, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--surface-hover);
+            border-color: #8b949e;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 70px 0 50px;
+            border-bottom: 1px solid var(--border-muted);
+        }
+
+        .hero-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--accent-text);
+            background: var(--accent-soft);
+            border: 1px solid rgba(46, 160, 67, 0.4);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 14px;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 720px;
+            margin-bottom: 24px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Sections */
+        section {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--border-muted);
+            scroll-margin-top: 70px;
+        }
+
+        .section-heading {
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+        }
+
+        .section-heading p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Pure Image Screenshot Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-thumb {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #090c10;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .gallery-thumb:hover {
+            transform: translateY(-3px);
+            border-color: #58a6ff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .gallery-thumb:hover img {
+            transform: scale(1.025);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-thumb:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-overlay svg {
+            width: 28px;
+            height: 28px;
+            color: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .feature-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .feature-box h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .feature-box p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Synergies */
+        .synergies-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .synergies-table th,
+        .synergies-table td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .synergies-table th {
+            background: var(--surface-raised);
+            color: var(--text);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .synergies-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .synergies-table td.item-name {
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        /* Callout */
+        .callout {
+            border: 1px solid var(--warn-border);
+            background: var(--warn-bg);
+            padding: 18px 20px;
+            border-radius: var(--radius);
+            margin-top: 30px;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: var(--warn-text);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .callout p {
+            font-size: 13.5px;
+            color: #d29922;
+            line-height: 1.5;
+        }
+
+        /* Commands */
+        .cmd-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .cmd-table th,
+        .cmd-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .cmd-table th {
+            background: var(--surface-raised);
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .cmd-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cmd-tag {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--accent-text);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: inline-block;
+        }
+
+        .btn-copy {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-family: var(--font-sans);
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-copy:hover {
+            color: var(--text);
+            border-color: var(--text-secondary);
+        }
+
+        /* FAQ / Troubleshooting */
+        .troubleshoot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .troubleshoot-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+        }
+
+        .troubleshoot-title {
+            font-weight: 600;
+            font-size: 14.5px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .troubleshoot-body {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .troubleshoot-body p {
+            margin-bottom: 6px;
+        }
+
+        .troubleshoot-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .troubleshoot-body strong {
+            color: var(--text);
+        }
+
+        /* Installation */
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .step-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .step-index {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-text);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-size: 14.5px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .step-desc a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .step-desc a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Lightbox */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.88);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 24px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal img {
+            max-width: 95%;
+            max-height: 90%;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 1.9rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Navigation -->
+    <nav>
+        <div class="container nav-inner">
+            <a href="#" class="brand">
+                <img src="assets/icon.png" alt="Icon">
+                <span>Stackable Items</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#screenshots">Screenshots</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#mechanics">Comparisons</a></li>
+                <li><a href="#commands">Commands</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#installation">Installation</a></li>
+            </ul>
+            <div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header / Hero -->
+    <header class="hero">
+        <div class="container">
+            <div class="hero-meta">
+                Mod versions for Minecraft 26.2
+            </div>
+            <h1>Stackable Items</h1>
+            <p>
+                A lightweight Fabric mod that removes item stack limits and allows any item to stack up to your chosen
+                limit, featuring vanilla-safe storage fallback and delta tracking.
+            </p>
+            <div class="hero-actions">
+            </div>
+        </div>
+    </header>
+
+    <!-- Dedicated Screenshots Section (Images Only) -->
+    <section id="screenshots">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Screenshots</h2>
+                <p>In-game previews of inventory stacking, container storage, and gameplay mechanics.</p>
+            </div>
+
+            <!-- Screenshot Gallery: Pure Images with Hover Zoom & Lightbox -->
+            <div class="gallery-grid">
+                <div class="gallery-thumb" onclick="openModal(this.querySelector('img').src)">
+                    <img src="assets/screenshots/screenshot-1.png" alt="Screenshot 1" onerror="handleImgError(this)">
+                    <div class="gallery-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="gallery-thumb" onclick="openModal(this.querySelector('img').src)">
+                    <img src="assets/screenshots/screenshot-2.png" alt="Screenshot 2" onerror="handleImgError(this)">
+                    <div class="gallery-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="gallery-thumb" onclick="openModal(this.querySelector('img').src)">
+                    <img src="assets/screenshots/screenshot-3.png" alt="Screenshot 3" onerror="handleImgError(this)">
+                    <div class="gallery-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="gallery-thumb" onclick="openModal(this.querySelector('img').src)">
+                    <img src="assets/screenshots/screenshot-4.png" alt="Screenshot 4" onerror="handleImgError(this)">
+                    <div class="gallery-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="gallery-thumb" onclick="openModal(this.querySelector('img').src)">
+                    <img src="assets/screenshots/screenshot-5.png" alt="Screenshot 5" onerror="handleImgError(this)">
+                    <div class="gallery-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="gallery-thumb" onclick="openModal(this.querySelector('img').src)">
+                    <img src="assets/screenshots/screenshot-6.png" alt="Screenshot 6" onerror="handleImgError(this)">
+                    <div class="gallery-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Key Features</h2>
+                <p>Core functionality implemented across Minecraft item and container systems.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-box">
+                    <h3>Stack Everything</h3>
+                    <p>Potions, totems of undying, buckets, soups, stews, saddles, armor, weapons, and tools stack
+                        normally.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Customizable Stack Limit</h3>
+                    <p>Adjust the stack size to any integer from 1 up to 999,999 or more (default: 64).</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Vanilla-Safe Storage</h3>
+                    <p>Items saved to disk are capped to vanilla bounds while surplus is preserved in vanilla custom
+                        data, preventing data loss if the mod is removed.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Delta Consumption Tracking</h3>
+                    <p>Items consumed while temporarily playing in vanilla are tracked and accurately deducted when the
+                        mod is reloaded.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Compact GUI Rendering</h3>
+                    <p>Numbers adapt automatically: font scales down for 3 digits, switches to compact notation (1k, 1M)
+                        for larger values, and shows full count on hover.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Safe Tool Stacking</h3>
+                    <p>Stacked damageable items decrement count upon breaking and provide the next item with fresh
+                        durability.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mechanics">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Comparisons</h2>
+                <p>comparison between without mod (vanilla) and mod</p>
+            </div>
+
+            <table class="synergies-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Item / Block</th>
+                        <th>Vanilla Behavior</th>
+                        <th>With Stackable Items</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="item-name">Bundle</td>
+                        <td>Caps at 64 items total (mixed item weight).</td>
+                        <td>Weight formula scales with max stack size; holds thousands of mixed items or multiple tools.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Totem of Undying</td>
+                        <td>Non-stackable; off-hand slot empties on trigger.</td>
+                        <td>Stacks in off-hand; triggers consume one totem while keeping remainder equipped.</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Furnace / Smoker</td>
+                        <td>Inputs limited to 64 items per slot.</td>
+                        <td>Accepts thousands of fuel and raw materials for continuous smelting.</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Dispenser / Dropper</td>
+                        <td>Max 576 arrows or projectiles per container.</td>
+                        <td>Can hold thousands of projectiles per slot for extended defense systems.</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Soups, Stews & Milk</td>
+                        <td>Non-stackable (1 item per inventory slot).</td>
+                        <td>Stackable in inventory and chests like normal items.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout">
+                <div class="callout-title">Vanilla Depletion Safety Rule</div>
+                <p>
+                    If you uninstall this mod and load your world in vanilla Minecraft, your oversized stacks will
+                    appear as standard 64-stacks (or 1 for tools) while keeping your reserve safely attached.
+                    <strong>Always leave at least 1 item in the slot.</strong> If you consume the stack to 0 in vanilla,
+                    Minecraft destroys the slot and the hidden reserve cannot be recovered.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands -->
+    <section id="commands">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Commands</h2>
+                <p>In-game commands for configuration (requires operator permission in multiplayer).</p>
+            </div>
+
+            <table class="cmd-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Command</th>
+                        <th>Description</th>
+                        <th style="width: 90px; text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="cmd-tag">/stackable set &lt;number&gt;</span></td>
+                        <td>Sets the maximum stack size (e.g. <code>/stackable set 1000</code>).</td>
+                        <td style="text-align: right;">
+                            <button class="btn-copy" onclick="copyCommand('/stackable set 1000')">Copy</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd-tag">/stackable reset</span></td>
+                        <td>Resets maximum stack size back to the default vanilla limit (64).</td>
+                        <td style="text-align: right;">
+                            <button class="btn-copy" onclick="copyCommand('/stackable reset')">Copy</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd-tag">/stackable reload</span></td>
+                        <td>Reloads <code>config/stackable_items.json</code> from disk without restarting.</td>
+                        <td style="text-align: right;">
+                            <button class="btn-copy" onclick="copyCommand('/stackable reload')">Copy</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Troubleshooting</h2>
+                <p>Common questions, redstone mechanics, and edge case solutions.</p>
+            </div>
+
+            <div class="troubleshoot-list">
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">1. Redstone item sorters or hopper filters not functioning</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> Redstone Comparators measure fullness based on stack capacity
+                            (<code>count / maxStackSize</code>). When stack limit is 1,000, 22 items output signal
+                            strength 0 instead of 1 or 2.</p>
+                        <p><strong>Solution:</strong> Use <code>/stackable reset</code> to set the limit back to 64 when
+                            running standard sorting systems, or use water-stream / allay sorting.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">2. Playing in vanilla after removing the mod</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> The fallback system caps visible counts to safe vanilla boundaries so
+                            vanilla does not discard oversize data.</p>
+                        <p><strong>Solution:</strong> Leave at least 1 item in the slot. When the mod is reinstalled,
+                            your full count restores with vanilla consumption accurately subtracted.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">3. Manual config file edits not updating in-game</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> The game caches settings in memory and does not poll the file while
+                            running.</p>
+                        <p><strong>Solution:</strong> Run <code>/stackable reload</code> in chat or console to apply
+                            changes immediately without a restart.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">4. Stacking weapons or tools with different enchantments</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> A single item slot can only store one set of components (durability,
+                            enchantments, custom names).</p>
+                        <p><strong>Solution:</strong> Store unique or high-tier enchanted gear in separate slots.
+                            Right-click to extract items individually if combined.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">5. Lowering the maximum stack size (e.g. 1,000 down to 64)</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> Changing the config limit does not delete existing stored items.</p>
+                        <p><strong>Solution:</strong> Existing oversized stacks in chests remain intact. Moving portions
+                            of them will split according to the new lower limit.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">6. Multiplayer / Dedicated Server Desync</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> Dedicated servers enforce inventory limits server-side. Client-only
+                            config changes have no effect.</p>
+                        <p><strong>Solution:</strong> Install the mod on the server and configure the limit using
+                            <code>/stackable set &lt;number&gt;</code> on the server console.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">7. Splitting fallback reserve stacks in vanilla</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> Vanilla duplicates item components when splitting stacks across
+                            multiple slots.</p>
+                        <p><strong>Solution:</strong> Keep reserve stacks in their original slots while playing in
+                            vanilla until the mod is re-added.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">8. Auto-Crafter jamming with large stacks</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> Hoppers fill the first open slot to capacity before filling other
+                            recipe slots.</p>
+                        <p><strong>Solution:</strong> Pre-populate all required crafting recipe slots before connecting
+                            continuous hopper feeds.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-card">
+                    <div class="troubleshoot-title">9. Ground item entities and the 5-minute despawn timer</div>
+                    <div class="troubleshoot-body">
+                        <p><strong>Cause:</strong> While the mod groups dropped items into a single entity to prevent
+                            lag, Minecraft's 5-minute despawn timer still applies once the chunk is loaded.</p>
+                        <p><strong>Solution:</strong> Retrieve dropped items within 5 minutes of loading the chunk.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Installation</h2>
+                <p>Installation guide for client and dedicated servers.</p>
+            </div>
+
+            <div class="install-steps">
+                <div class="step-box">
+                    <div class="step-index">Step 01</div>
+                    <div class="step-title">Install Fabric</div>
+                    <div class="step-desc">Download and install <a href="https://fabricmc.net/" target="_blank">Fabric
+                            Loader</a> and <a href="https://modrinth.com/mod/fabric-api" target="_blank">Fabric API</a>
+                        for Minecraft 26.2 or another Fabric-compatible version</div>
+                </div>
+                <div class="step-box">
+                    <div class="step-index">Step 02</div>
+                    <div class="step-title">Download Mod</div>
+                    <div class="step-desc">Download the <code>.jar</code> file bottom of this page button.</div>
+                </div>
+                <div class="step-box">
+                    <div class="step-index">Step 03</div>
+                    <div class="step-title">Place in Mods Folder</div>
+                    <div class="step-desc">Copy the file into <code>.minecraft/mods</code> (or your server's
+                        <code>mods/</code> directory) and start the game.
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <!-- TEMPLATE DOWNLOAD URL -->
+                <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary">
+                    Download Stackable Items (.jar)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Stackable Items • Developed by Lieval • Licensed under the <a href="LICENSE" target="_blank">MIT
+                    License</a></p>
+        </div>
+    </footer>
+
+    <!-- Image Modal (Lightbox) -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="modal-close">&times;</span>
+        <img id="modalImg" src="" alt="Full preview">
+    </div>
+
+    <!-- Script -->
+    <script>
+        function copyCommand(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard: ' + text);
+            });
+        }
+
+        function openModal(src) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('modalImg');
+            img.src = src;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Smooth scrolling using scrollIntoView()
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (!targetId || targetId === '#') {
+                    e.preventDefault();
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    try {history.pushState(null, null, ' ');} catch (err) {}
+                    return;
+                }
+                const targetElem = document.querySelector(targetId);
+                if (targetElem) {
+                    e.preventDefault();
+                    targetElem.scrollIntoView({behavior: 'smooth'});
+                    try {history.pushState(null, null, targetId);} catch (err) {}
+                }
+            });
+        });
+
+        // Smooth scroll on initial load if URL has a hash
+        if (window.location.hash) {
+            window.addEventListener('DOMContentLoaded', () => {
+                const hashTarget = document.querySelector(window.location.hash);
+                if (hashTarget) {
+                    setTimeout(() => {
+                        hashTarget.scrollIntoView({behavior: 'smooth'});
+                    }, 100);
+                }
+            });
+        }
+
+        // Generate clean dark placeholder if image file is not yet provided
+        function handleImgError(img) {
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+                    <rect width="640" height="360" fill="#111620"/>
+                    <rect x="1" y="1" width="638" height="358" fill="none" stroke="#21262d" stroke-width="2"/>
+                    <g transform="translate(320, 180)" fill="none" stroke="#30363d" stroke-width="2">
+                        <rect x="-28" y="-20" width="56" height="40" rx="4"/>
+                        <circle cx="-10" cy="-6" r="4"/>
+                        <path d="M-28 10 L-10 -8 L8 10 L24 -4 L28 0 L28 20 L-28 20 Z"/>
+                    </g>
+                </svg>
+            `;
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+            img.onerror = null;
+        }
+    </script>
+</body>
+
+</html>
