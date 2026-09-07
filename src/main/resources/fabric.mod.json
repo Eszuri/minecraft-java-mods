@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "easily_critical",
+	"version": "${version}",
+	"name": "Easily Critical",
+	"description": "Reworks Mace combat mechanics with fall damage protection, jump smash attacks, standing criticals, and faster attack speed.",
+	"authors": [
+		"Lieval"
+	],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/easily_critical/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.lieval.maceeasily.MaceEasilyMod"
+		],
+		"client": [
+			"com.lieval.maceeasily.client.MaceEasilyClientMod"
+		],
+		"modmenu": [
+			"com.lieval.maceeasily.client.MaceEasilyModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"easily_critical.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25"
+	},
+	"recommends": {
+		"modmenu": "*"
+	}
+}

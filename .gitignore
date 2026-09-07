@@ -1,0 +1,40 @@
+# Gradle
+.gradle/
+build/
+out/
+classes/
+
+# Output jar files
+output/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE & Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+bin/
+.classpath
+.project
+
+# Minecraft Run & Logs
+run/
+runClient/
+runServer/
+logs/
+crash-reports/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Java Dumps & Logs
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+
