@@ -1,0 +1,75 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect documentation directory
+        id: detect
+        run: |
+          if [ -f "package.json" ]; then
+            echo "DOCS_DIR=." >> $GITHUB_ENV
+          elif [ -f "minecraft-docs/package.json" ]; then
+            echo "DOCS_DIR=minecraft-docs" >> $GITHUB_ENV
+          else
+            echo "Error: package.json not found!" >&2
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: ${{ env.DOCS_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.DOCS_DIR }}
+        run: npm ci || npm install
+
+      - name: Build SvelteKit static site
+        working-directory: ${{ env.DOCS_DIR }}
+        run: npm run build
+
+      - name: Ensure .nojekyll exists
+        run: touch ${{ env.DOCS_DIR }}/build/.nojekyll
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.DOCS_DIR }}/build
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
