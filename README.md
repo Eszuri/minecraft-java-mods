@@ -107,7 +107,7 @@ A lightweight Minecraft mod that removes item stack limits, allowing you to stac
 
 ## 📥 Installation
 
-1. Install **[Fabric Loader](https://fabricmc.net/)** and **[Fabric API](https://modrinth.com/mod/fabric-api)** for Minecraft 26.2 or another Fabric-compatible version.
+1. Install **[Fabric Loader](https://fabricmc.net/)** and **[Fabric API](https://modrinth.com/mod/fabric-api)** for Minecraft 26.3 or another Fabric-compatible version.
 2. Place the mod `.jar` into your `.minecraft/mods` directory.
 3. *(Optional)* Install **[Mod Menu](https://modrinth.com/mod/modmenu)** for GUI configuration.
 4. Launch the game!
