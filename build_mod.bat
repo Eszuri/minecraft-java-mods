@@ -8,13 +8,13 @@ echo ========================================================
 echo.
 
 :: Check Java
-where java >nul 2>nul
-if %ERRORLEVEL% NEQ 0 (
-    if exist "C:\Program Files\Java\jdk-26.0.1" (
-        set "JAVA_HOME=C:\Program Files\Java\jdk-26.0.1"
-        set "PATH=!JAVA_HOME!\bin;!PATH!"
-        echo [INFO] Menggunakan JDK dari C:\Program Files\Java\jdk-26.0.1
-    ) else (
+if exist "C:\Program Files\Java\jdk-26.0.1" (
+    set "JAVA_HOME=C:\Program Files\Java\jdk-26.0.1"
+    set "PATH=!JAVA_HOME!\bin;!PATH!"
+    echo [INFO] Menggunakan JDK dari C:\Program Files\Java\jdk-26.0.1
+) else (
+    where java >nul 2>nul
+    if %ERRORLEVEL% NEQ 0 (
         echo [ERROR] JDK tidak ditemukan! Pastikan Java 25/26 terinstall.
         pause
         exit /b 1
