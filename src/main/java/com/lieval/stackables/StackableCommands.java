@@ -10,6 +10,7 @@ public class StackableCommands {
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(Commands.literal("stackable")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("set")
                     .then(Commands.argument("amount", IntegerArgumentType.integer(1, 999999))
                         .executes(context -> {
