@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "no_limit_enchant",
+	"version": "${version}",
+	"name": "No Limit Enchant",
+	"description": "Removes the anvil Too Expensive limit and allows upgrading enchantment levels without limits.",
+	"authors": [
+		"Lieval"
+	],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/no_limit_enchant/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.lieval.nolimitenchant.NoLimitEnchantMod"
+		],
+		"client": [
+			"com.lieval.nolimitenchant.client.NoLimitEnchantClientMod"
+		],
+		"modmenu": [
+			"com.lieval.nolimitenchant.client.NoLimitEnchantModMenu"
+		]
+	},
+	"mixins": [
+		"no_limit_enchant.mixins.json",
+		{
+			"config": "no_limit_enchant.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.3",
+		"java": ">=25"
+	},
+	"recommends": {
+		"modmenu": "*"
+	}
+}

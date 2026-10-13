@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "com.lieval.nolimitenchant.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"AnvilMenuMixin",
+		"EnchantCommandMixin",
+		"EnchantmentMixin",
+		"ItemEnchantmentsMixin",
+		"ItemEnchantmentsMutableMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.lieval.nolimitenchant.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"AnvilScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
