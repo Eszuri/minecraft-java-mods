@@ -1,6 +1,5 @@
 package com.lieval.nolimitenchant.client.mixin;
 
-import com.lieval.nolimitenchant.NoLimitEnchantMod;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
