@@ -11,19 +11,11 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(ItemEnchantments.class)
 public abstract class ItemEnchantmentsMixin {
 
-    /**
-     * Mengizinkan level enchantment di atas 255 pada konstruktor ItemEnchantments
-     * tanpa melempar IllegalArgumentException.
-     */
     @ModifyConstant(method = "<init>(Lit/unimi/dsi/fastutil/objects/Object2IntOpenHashMap;)V", constant = @Constant(intValue = 255))
     private static int noLimitEnchant_allowLargeLevelsInConstructor(int constant) {
         return Integer.MAX_VALUE;
     }
 
-    /**
-     * Memperluas batasan Codec.intRange(1, 255) menjadi Codec.intRange(1, Integer.MAX_VALUE)
-     * agar level tinggi bisa disimpan dan dimuat dari data dunia/NBT.
-     */
     @ModifyArg(
         method = "<clinit>",
         at = @At(

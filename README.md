@@ -1,17 +1,8 @@
 # No Limit Enchant
 
-A lightweight Fabric mod that removes anvil limits and allows upgrading enchantment levels.
+## Description
 
-## Features
-
-- **No "Too Expensive!"**: Removes the vanilla 40-level cost limit on anvils.
-- **Higher Enchantment Levels**: Combine identical items/books to upgrade beyond vanilla limits (default: 255).
-- **Anvil Penalty Toggle**:
-  - `None`: 0 penalty; items always cost base enchantment price.
-  - `Unlimited`: Vanilla exponential penalty.
-- **Level Formatting**: Display levels as Roman numerals or numbers.
-- **Command Support**: Allows `/enchant` to exceed vanilla max levels.
-- **In-Game Config**: Configurable via Mod Menu.
+A lightweight Fabric mod that removes vanilla anvil restrictions and unlocks higher enchantment levels. It eliminates the 40-level "Too Expensive!" limit, allows upgrading enchantments beyond vanilla maximums (up to level 255) by combining matching items or books, and provides options to customize anvil repair penalties and level display formats.
 
 ## Installation
 
@@ -25,19 +16,19 @@ Configurable in-game via **Mod Menu** or by editing `.minecraft/config/no_limit_
 
 ```json
 {
-  "removeAnvilPenalty": true,
-  "maxEnchantmentLevel": 255,
-  "levelFormat": "ROMAN"
+  "anvilPenalty": true,
+  "levelFormat": "ROMAN",
+  "maxLevel": 255
 }
 ```
 
 ### Options
 
-- **`removeAnvilPenalty`** (`true` / `false`):
+- **`anvilPenalty`** (`true` / `false`):
   - `true` (*None*): 0 repair penalty; upgrading and repairing always stay cheap.
   - `false` (*Unlimited*): Vanilla exponential penalty ($2^n - 1$).
-- **`maxEnchantmentLevel`** (number, default: `255`):
-  - Maximum enchantment level limit when combining items in anvils and using `/enchant`.
 - **`levelFormat`** (`"ROMAN"` / `"NUMBER"`):
   - `"ROMAN"`: Displays levels as Roman numerals (e.g. `Sharpness X`, `Sharpness CCLV`).
   - `"NUMBER"`: Displays levels as standard numbers (e.g. `Sharpness 10`, `Sharpness 255`).
+- **`maxLevel`** (number, default: `255`):
+  - Maximum enchantment level limit when combining items in anvils and using `/enchant`.

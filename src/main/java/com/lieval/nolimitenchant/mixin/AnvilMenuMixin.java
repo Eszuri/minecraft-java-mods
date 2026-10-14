@@ -16,11 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AnvilMenu.class)
 public abstract class AnvilMenuMixin {
 
-    /**
-     * Mengembalikan level maksimum enchantment yang telah ditingkatkan (misal 255)
-     * saat anvil menggabungkan dua item/buku, sehingga level bisa terus di-upgrade.
-     * Fitur ini selalu aktif (selalu ON).
-     */
     @Redirect(
         method = "createResult",
         at = @At(
@@ -29,14 +24,10 @@ public abstract class AnvilMenuMixin {
         )
     )
     private int noLimitEnchant_redirectGetMaxLevel(Enchantment enchantment) {
-        int max = NoLimitEnchantMod.CONFIG != null ? NoLimitEnchantMod.CONFIG.maxEnchantmentLevel : 255;
+        int max = NoLimitEnchantMod.CONFIG != null ? NoLimitEnchantMod.CONFIG.maxLevel : 255;
         return Math.max(enchantment.getMaxLevel(), max);
     }
 
-    /**
-     * Mencegah vanilla membatalkan slot output (mengosongkan item hasil) ketika biaya >= 40.
-     * Fitur ini selalu aktif (selalu ON).
-     */
     @Redirect(
         method = "createResult",
         at = @At(
@@ -49,10 +40,6 @@ public abstract class AnvilMenuMixin {
         return true;
     }
 
-    /**
-     * Mengabaikan penalti kerja (Prior Work Penalty) yang tersimpan pada item saat removeAnvilPenalty aktif.
-     * Item akan dianggap memiliki penalti 0 sehingga biaya murni hanya biaya enchantment/repair.
-     */
     @Redirect(
         method = "createResult",
         at = @At(
@@ -61,20 +48,15 @@ public abstract class AnvilMenuMixin {
         )
     )
     private <T> Object noLimitEnchant_ignorePriorWorkPenalty(ItemStack stack, DataComponentType<? extends T> componentType, T defaultValue) {
-        if (NoLimitEnchantMod.CONFIG != null && NoLimitEnchantMod.CONFIG.removeAnvilPenalty && componentType == DataComponents.REPAIR_COST) {
+        if (NoLimitEnchantMod.CONFIG != null && NoLimitEnchantMod.CONFIG.anvilPenalty && componentType == DataComponents.REPAIR_COST) {
             return 0;
         }
         return stack.getOrDefault(componentType, defaultValue);
     }
 
-    /**
-     * Mengatur penalti kerja anvil (prior work penalty):
-     * - Jika removeAnvilPenalty aktif (ON): Penalti diatur 0 (tidak ada penalti sama sekali, item selalu seperti baru).
-     * - Jika tidak aktif (OFF): Penalti vanilla berlipat ganda tanpa batas ((cost * 2) + 1).
-     */
     @Inject(method = "calculateIncreasedRepairCost", at = @At("HEAD"), cancellable = true)
     private static void noLimitEnchant_calculateIncreasedRepairCost(int cost, CallbackInfoReturnable<Integer> cir) {
-        if (NoLimitEnchantMod.CONFIG != null && NoLimitEnchantMod.CONFIG.removeAnvilPenalty) {
+        if (NoLimitEnchantMod.CONFIG != null && NoLimitEnchantMod.CONFIG.anvilPenalty) {
             cir.setReturnValue(0);
         }
     }

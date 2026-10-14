@@ -9,11 +9,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(AnvilScreen.class)
 public abstract class AnvilScreenMixin {
 
-    /**
-     * Mencegah tampilan teks merah "Too Expensive!" pada GUI Anvil.
-     * Mengarahkan rendering agar selalu menampilkan jumlah level yang dibutuhkan
-     * (berwarna hijau jika level pemain cukup, atau merah jika level kurang).
-     */
     @Redirect(
         method = "extractLabels",
         at = @At(

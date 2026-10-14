@@ -2,6 +2,8 @@ package com.lieval.nolimitenchant.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,31 +23,40 @@ public class NoLimitEnchantConfig {
         NUMBER
     }
 
-    // Anvil penalty removal:
-    // true = No penalty at all (penalty = 0 always)
-    // false = Vanilla exponential penalty without limit (unlimited)
-    public boolean removeAnvilPenalty = true;
-
-    // Maximum enchantment level allowed (default: 255)
-    public int maxEnchantmentLevel = 255;
-
-    // Enchantment level display format (ROMAN vs NUMBER)
+    public boolean anvilPenalty = true;
     public LevelFormat levelFormat = LevelFormat.ROMAN;
+    public int maxLevel = 255;
 
     public static NoLimitEnchantConfig load() {
         File file = CONFIG_PATH.toFile();
         if (file.exists()) {
             try (FileReader reader = new FileReader(file)) {
-                NoLimitEnchantConfig config = GSON.fromJson(reader, NoLimitEnchantConfig.class);
-                if (config != null) {
-                    if (config.levelFormat == null) {
+                JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                NoLimitEnchantConfig config = new NoLimitEnchantConfig();
+
+                if (json.has("anvilPenalty")) {
+                    config.anvilPenalty = json.get("anvilPenalty").getAsBoolean();
+                }
+
+                if (json.has("levelFormat")) {
+                    try {
+                        config.levelFormat = LevelFormat.valueOf(json.get("levelFormat").getAsString().toUpperCase());
+                    } catch (Exception ignored) {
                         config.levelFormat = LevelFormat.ROMAN;
                     }
-                    if (config.maxEnchantmentLevel <= 0) {
-                        config.maxEnchantmentLevel = 255;
-                    }
-                    return config;
                 }
+
+                if (json.has("maxLevel")) {
+                    config.maxLevel = json.get("maxLevel").getAsInt();
+                }
+
+                if (config.maxLevel <= 0) {
+                    config.maxLevel = 255;
+                }
+                if (config.levelFormat == null) {
+                    config.levelFormat = LevelFormat.ROMAN;
+                }
+                return config;
             } catch (Exception e) {
                 LOGGER.error("Failed to load No Limit Enchant configuration! Using default settings.", e);
             }
@@ -59,8 +70,8 @@ public class NoLimitEnchantConfig {
         if (this.levelFormat == null) {
             this.levelFormat = LevelFormat.ROMAN;
         }
-        if (this.maxEnchantmentLevel <= 0) {
-            this.maxEnchantmentLevel = 255;
+        if (this.maxLevel <= 0) {
+            this.maxLevel = 255;
         }
         try {
             File file = CONFIG_PATH.toFile();

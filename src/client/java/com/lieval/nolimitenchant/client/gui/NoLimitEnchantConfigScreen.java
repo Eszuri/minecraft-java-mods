@@ -13,7 +13,7 @@ public class NoLimitEnchantConfigScreen extends Screen {
     private final Screen parent;
     private final NoLimitEnchantConfig config;
 
-    private boolean removeAnvilPenalty;
+    private boolean anvilPenalty;
     private NoLimitEnchantConfig.LevelFormat levelFormat;
     private EditBox maxLevelBox;
 
@@ -22,7 +22,7 @@ public class NoLimitEnchantConfigScreen extends Screen {
         this.parent = parent;
         this.config = NoLimitEnchantMod.CONFIG != null ? NoLimitEnchantMod.CONFIG : NoLimitEnchantConfig.load();
 
-        this.removeAnvilPenalty = this.config.removeAnvilPenalty;
+        this.anvilPenalty = this.config.anvilPenalty;
         this.levelFormat = this.config.levelFormat != null ? this.config.levelFormat : NoLimitEnchantConfig.LevelFormat.ROMAN;
     }
 
@@ -36,12 +36,11 @@ public class NoLimitEnchantConfigScreen extends Screen {
         int controlWidth = 135;
         int controlHeight = 20;
 
-        // Row 1: Anvil Penalty Toggle Button (Right side)
         int row1Y = startY;
         Button penaltyBtn = Button.builder(
                 getPenaltyComponent(),
                 btn -> {
-                    this.removeAnvilPenalty = !this.removeAnvilPenalty;
+                    this.anvilPenalty = !this.anvilPenalty;
                     btn.setMessage(getPenaltyComponent());
                 })
                 .bounds(controlX, row1Y, controlWidth, controlHeight)
@@ -49,7 +48,6 @@ public class NoLimitEnchantConfigScreen extends Screen {
                 .build();
         addRenderableWidget(penaltyBtn);
 
-        // Row 2: Level Format Toggle Button (Right side)
         int row2Y = startY + rowGap;
         Button formatBtn = Button.builder(
                 getLevelFormatComponent(),
@@ -64,9 +62,8 @@ public class NoLimitEnchantConfigScreen extends Screen {
                 .build();
         addRenderableWidget(formatBtn);
 
-        // Row 3: Max Level EditBox (Right side)
         int row3Y = startY + rowGap * 2;
-        int currentMax = this.config.maxEnchantmentLevel;
+        int currentMax = this.config.maxLevel;
         if (currentMax <= 0) {
             currentMax = 255;
         }
@@ -84,7 +81,6 @@ public class NoLimitEnchantConfigScreen extends Screen {
         });
         addRenderableWidget(this.maxLevelBox);
 
-        // Row 4: Action Buttons (Apply & Cancel)
         int actionY = startY + rowGap * 3 + 12;
         int actionWidth = 135;
 
@@ -104,7 +100,7 @@ public class NoLimitEnchantConfigScreen extends Screen {
     }
 
     private Component getPenaltyComponent() {
-        return Component.literal(this.removeAnvilPenalty ? "§aNone" : "§cUnlimited");
+        return Component.literal(this.anvilPenalty ? "§aNone" : "§cUnlimited");
     }
 
     private Component getLevelFormatComponent() {
@@ -116,7 +112,7 @@ public class NoLimitEnchantConfigScreen extends Screen {
     }
 
     private void applyAndClose() {
-        this.config.removeAnvilPenalty = this.removeAnvilPenalty;
+        this.config.anvilPenalty = this.anvilPenalty;
         this.config.levelFormat = this.levelFormat;
 
         if (this.maxLevelBox != null) {
@@ -124,12 +120,12 @@ public class NoLimitEnchantConfigScreen extends Screen {
             try {
                 int parsed = Integer.parseInt(val);
                 if (parsed > 0) {
-                    this.config.maxEnchantmentLevel = parsed;
+                    this.config.maxLevel = parsed;
                 } else {
-                    this.config.maxEnchantmentLevel = 255;
+                    this.config.maxLevel = 255;
                 }
             } catch (NumberFormatException e) {
-                this.config.maxEnchantmentLevel = 255;
+                this.config.maxLevel = 255;
             }
         }
 
@@ -154,10 +150,8 @@ public class NoLimitEnchantConfigScreen extends Screen {
         int rowGap = 26;
         int labelX = centerX - 140;
 
-        // Title
         graphics.centeredText(this.font, Component.literal("§6§lNo Limit Enchant"), centerX, centerY - 68, 0xFFFFFFFF);
 
-        // Feature Labels (Left column, aligned with controls)
         graphics.text(this.font, Component.literal("§fAnvil Penalty"), labelX, startY + 6, 0xFFFFFFFF);
         graphics.text(this.font, Component.literal("§fLevel Format"), labelX, startY + rowGap + 6, 0xFFFFFFFF);
         graphics.text(this.font, Component.literal("§fMax Level"), labelX, startY + rowGap * 2 + 6, 0xFFFFFFFF);
