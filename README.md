@@ -21,15 +21,23 @@ A lightweight Fabric mod that removes anvil limits and allows upgrading enchantm
 
 ## Configuration
 
-Saved at `.minecraft/config/no_limit_enchant.json`:
+Configurable in-game via **Mod Menu** or by editing `.minecraft/config/no_limit_enchant.json`:
 
 ```json
 {
-  "removeTooExpensive": true,
   "removeAnvilPenalty": true,
-  "allowInfiniteEnchantLevels": true,
   "maxEnchantmentLevel": 255,
-  "allowCommandOverlevel": true,
   "levelFormat": "ROMAN"
 }
 ```
+
+### Options
+
+- **`removeAnvilPenalty`** (`true` / `false`):
+  - `true` (*None*): 0 repair penalty; upgrading and repairing always stay cheap.
+  - `false` (*Unlimited*): Vanilla exponential penalty ($2^n - 1$).
+- **`maxEnchantmentLevel`** (number, default: `255`):
+  - Maximum enchantment level limit when combining items in anvils and using `/enchant`.
+- **`levelFormat`** (`"ROMAN"` / `"NUMBER"`):
+  - `"ROMAN"`: Displays levels as Roman numerals (e.g. `Sharpness X`, `Sharpness CCLV`).
+  - `"NUMBER"`: Displays levels as standard numbers (e.g. `Sharpness 10`, `Sharpness 255`).

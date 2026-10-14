@@ -13,7 +13,6 @@ public class NoLimitEnchantMod implements ModInitializer {
     @Override
     public void onInitialize() {
         CONFIG = NoLimitEnchantConfig.load();
-        LOGGER.info("No Limit Enchant loaded successfully! (Max Level: {}, Remove Too Expensive: {})",
-                CONFIG.maxEnchantmentLevel, CONFIG.removeTooExpensive);
+        LOGGER.info("No Limit Enchant loaded successfully! (Max Level: {})", CONFIG.maxEnchantmentLevel);
     }
 }

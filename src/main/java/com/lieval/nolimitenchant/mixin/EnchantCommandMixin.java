@@ -13,6 +13,7 @@ public abstract class EnchantCommandMixin {
     /**
      * Mengizinkan perintah /enchant memberikan level melampaui maxLevel vanilla
      * hingga batas maxEnchantmentLevel yang diizinkan oleh mod.
+     * Fitur ini selalu aktif (selalu ON).
      */
     @Redirect(
         method = "enchant",
@@ -22,9 +23,9 @@ public abstract class EnchantCommandMixin {
         )
     )
     private static int noLimitEnchant_redirectCommandMaxLevel(Enchantment enchantment) {
-        if (NoLimitEnchantMod.CONFIG != null && NoLimitEnchantMod.CONFIG.allowCommandOverlevel) {
+        if (NoLimitEnchantMod.CONFIG != null) {
             return NoLimitEnchantMod.CONFIG.maxEnchantmentLevel;
         }
-        return enchantment.getMaxLevel();
+        return 255;
     }
 }

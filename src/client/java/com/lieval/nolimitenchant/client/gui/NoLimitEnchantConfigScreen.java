@@ -116,8 +116,6 @@ public class NoLimitEnchantConfigScreen extends Screen {
     }
 
     private void applyAndClose() {
-        this.config.removeTooExpensive = true;
-        this.config.allowInfiniteEnchantLevels = true;
         this.config.removeAnvilPenalty = this.removeAnvilPenalty;
         this.config.levelFormat = this.levelFormat;
 

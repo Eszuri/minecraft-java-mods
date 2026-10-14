@@ -21,20 +21,13 @@ public class NoLimitEnchantConfig {
         NUMBER
     }
 
-    // Anvil "Too Expensive!" removal (always active)
-    public boolean removeTooExpensive = true;
-
     // Anvil penalty removal:
     // true = No penalty at all (penalty = 0 always)
     // false = Vanilla exponential penalty without limit (unlimited)
     public boolean removeAnvilPenalty = true;
 
-    // Infinite enchantment leveling (always active)
-    public boolean allowInfiniteEnchantLevels = true;
+    // Maximum enchantment level allowed (default: 255)
     public int maxEnchantmentLevel = 255;
-
-    // Allow /enchant command to exceed vanilla max level
-    public boolean allowCommandOverlevel = true;
 
     // Enchantment level display format (ROMAN vs NUMBER)
     public LevelFormat levelFormat = LevelFormat.ROMAN;
@@ -45,8 +38,6 @@ public class NoLimitEnchantConfig {
             try (FileReader reader = new FileReader(file)) {
                 NoLimitEnchantConfig config = GSON.fromJson(reader, NoLimitEnchantConfig.class);
                 if (config != null) {
-                    config.removeTooExpensive = true;
-                    config.allowInfiniteEnchantLevels = true;
                     if (config.levelFormat == null) {
                         config.levelFormat = LevelFormat.ROMAN;
                     }
@@ -65,8 +56,6 @@ public class NoLimitEnchantConfig {
     }
 
     public void save() {
-        this.removeTooExpensive = true;
-        this.allowInfiniteEnchantLevels = true;
         if (this.levelFormat == null) {
             this.levelFormat = LevelFormat.ROMAN;
         }
