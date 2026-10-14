@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "reflective_shield",
+	"version": "${version}",
+	"name": "Reflective Shield",
+	"description": "Reflects incoming attacks back to the attacker when blocking with a shield (melee damage reflection & projectile deflection) with 360-degree full-body protection.",
+	"authors": [
+		"Lieval"
+	],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/reflective_shield/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.lieval.reflectiveshield.ReflectiveShieldMod"
+		],
+		"client": [
+			"com.lieval.reflectiveshield.client.ReflectiveShieldClientMod"
+		]
+	},
+	"mixins": [
+		"reflective_shield.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.3",
+		"java": ">=25"
+	}
+}
