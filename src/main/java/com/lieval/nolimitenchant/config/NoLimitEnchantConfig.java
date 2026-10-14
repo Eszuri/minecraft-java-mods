@@ -50,7 +50,7 @@ public class NoLimitEnchantConfig {
                     if (config.levelFormat == null) {
                         config.levelFormat = LevelFormat.ROMAN;
                     }
-                    if (config.maxEnchantmentLevel <= 0 || config.maxEnchantmentLevel == 9999) {
+                    if (config.maxEnchantmentLevel <= 0) {
                         config.maxEnchantmentLevel = 255;
                     }
                     return config;
@@ -70,7 +70,7 @@ public class NoLimitEnchantConfig {
         if (this.levelFormat == null) {
             this.levelFormat = LevelFormat.ROMAN;
         }
-        if (this.maxEnchantmentLevel <= 0 || this.maxEnchantmentLevel == 9999) {
+        if (this.maxEnchantmentLevel <= 0) {
             this.maxEnchantmentLevel = 255;
         }
         try {

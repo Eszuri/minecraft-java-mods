@@ -67,7 +67,7 @@ public class NoLimitEnchantConfigScreen extends Screen {
         // Row 3: Max Level EditBox (Right side)
         int row3Y = startY + rowGap * 2;
         int currentMax = this.config.maxEnchantmentLevel;
-        if (currentMax <= 0 || currentMax == 9999) {
+        if (currentMax <= 0) {
             currentMax = 255;
         }
 
