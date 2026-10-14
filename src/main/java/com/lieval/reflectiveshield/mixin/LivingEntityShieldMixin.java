@@ -18,10 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityShieldMixin {
 
-    /**
-     * Expands shield coverage to 360 degrees (covering the player's entire body from all sides),
-     * by setting the attack angle to 0 radians during damage reduction resolution.
-     */
     @ModifyArg(
         method = "applyItemBlocking",
         at = @At(
@@ -37,10 +33,6 @@ public abstract class LivingEntityShieldMixin {
         return angle;
     }
 
-    /**
-     * Reliably produces the authentic vanilla shield block sound on ANY blocked attack
-     * (including rapid consecutive hits, zero residual damage hits, explosions, and 360-degree hits).
-     */
     @Inject(method = "applyItemBlocking", at = @At("RETURN"))
     private void reflectiveShield_onApplyItemBlockingSound(ServerLevel level, DamageSource damageSource, float amount, CallbackInfoReturnable<Float> cir) {
         if (cir.getReturnValue() > 0.0F) {
@@ -58,9 +50,6 @@ public abstract class LivingEntityShieldMixin {
         }
     }
 
-    /**
-     * Suppresses vanilla's conditional onBlocked sound in hurtServer to prevent duplicate sounds.
-     */
     @Redirect(
         method = "hurtServer",
         at = @At(
@@ -69,16 +58,10 @@ public abstract class LivingEntityShieldMixin {
         )
     )
     private void reflectiveShield_suppressDuplicateVanillaOnBlocked(BlocksAttacks instance, ServerLevel level, LivingEntity entity) {
-        // Handled reliably by reflectiveShield_onApplyItemBlockingSound on every blocked hit
     }
 
-    /**
-     * Intercepts successful melee shield blocks and reflects 100% of damage back to the attacker,
-     * applying standard player-equivalent knockback from any direction.
-     */
     @Inject(method = "blockUsingItem", at = @At("HEAD"))
     private void reflectiveShield_onBlockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource damageSource, float amount, boolean hasBlocked, CallbackInfo ci) {
-        // Prevent counter looping if damage is already reflected / thorns
         if (damageSource.is(DamageTypes.THORNS)) {
             return;
         }
@@ -86,11 +69,9 @@ public abstract class LivingEntityShieldMixin {
         LivingEntity defender = (LivingEntity) (Object) this;
 
         if (attacker != null && attacker.isAlive() && amount > 0.0f) {
-            // Reflected damage equals incoming damage (1:1)
             DamageSource counterSource = level.damageSources().thorns(defender);
             attacker.hurtServer(level, counterSource, amount);
 
-            // Knockback equivalent to standard player knockback (0.5D), pushing attacker away from defender
             double dx = attacker.getX() - defender.getX();
             double dz = attacker.getZ() - defender.getZ();
             attacker.knockback(0.5D, dx, dz, counterSource, amount);

@@ -14,9 +14,6 @@
 	"entrypoints": {
 		"main": [
 			"com.lieval.reflectiveshield.ReflectiveShieldMod"
-		],
-		"client": [
-			"com.lieval.reflectiveshield.client.ReflectiveShieldClientMod"
 		]
 	},
 	"mixins": [

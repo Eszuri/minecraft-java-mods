@@ -7,7 +7,6 @@ echo         Compiling Reflective Shield Mod (.jar)
 echo ========================================================
 echo.
 
-:: Check Java
 if exist "C:\Program Files\Java\jdk-26.0.1" (
     set "JAVA_HOME=C:\Program Files\Java\jdk-26.0.1"
     set "PATH=!JAVA_HOME!\bin;!PATH!"
@@ -33,7 +32,6 @@ echo.
 echo [2/2] Menyiapkan folder output...
 if not exist "output" mkdir output
 
-:: Copy jar to output folder ONLY
 for %%F in (build\libs\reflective_shield-*.jar) do (
     echo %%~nxF | findstr /i "sources" >nul
     if errorlevel 1 (

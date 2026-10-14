@@ -25,11 +25,6 @@ public abstract class ProjectileDeflectMixin {
     @Shadow
     public abstract Entity getOwner();
 
-    /**
-     * Intercepts projectile collisions. When a projectile hits a blocking entity from ANY angle
-     * (360-degree full body shield protection), it plays the authentic vanilla shield impact sound
-     * and deflects the projectile directly back to the shooter.
-     */
     @Inject(method = "onHit", at = @At("HEAD"), cancellable = true)
     private void reflectiveShield_onProjectileHit(HitResult hitResult, CallbackInfo ci) {
         if (hitResult.getType() != HitResult.Type.ENTITY) {
@@ -54,13 +49,11 @@ public abstract class ProjectileDeflectMixin {
             return;
         }
 
-        // Shield durability damage (standard shield behavior)
         ItemStack shield = defender.getItemBlockingWith();
         if (shield != null && !shield.isEmpty()) {
             shield.hurtAndBreak(1, defender, defender.getUsedItemHand());
         }
 
-        // Play authentic vanilla shield impact sound
         level.playSound(
             null,
             defender.getX(),
@@ -72,7 +65,6 @@ public abstract class ProjectileDeflectMixin {
             0.8F + defender.getRandom().nextFloat() * 0.4F
         );
 
-        // Deflected speed equals incoming speed (1:1 ratio)
         double incomingSpeed = projectile.getDeltaMovement().length();
         double speed = Math.max(incomingSpeed, 0.8);
 
@@ -81,23 +73,20 @@ public abstract class ProjectileDeflectMixin {
         Vec3 newVelocity;
 
         if (shooter != null && shooter.isAlive()) {
-            // Target shooter's eye/chest position directly
             Vec3 targetPos = shooter.getEyePosition().subtract(0, 0.15, 0);
             Vec3 dir = targetPos.subtract(projPos).normalize();
             newVelocity = dir.scale(speed);
         } else {
-            // If shooter is null or dead, bounce directly backwards along incoming trajectory
             newVelocity = projectile.getDeltaMovement().scale(-1.0);
             if (newVelocity.lengthSqr() < 1e-4) {
                 newVelocity = defender.getLookAngle().normalize().scale(speed);
             }
         }
 
-        // Slightly step projectile away from defender to avoid re-collision
         projectile.setPos(
-                projectile.getX() + newVelocity.x * 0.1,
-                projectile.getY() + newVelocity.y * 0.1,
-                projectile.getZ() + newVelocity.z * 0.1
+            projectile.getX() + newVelocity.x * 0.1,
+            projectile.getY() + newVelocity.y * 0.1,
+            projectile.getZ() + newVelocity.z * 0.1
         );
 
         projectile.setDeltaMovement(newVelocity);
@@ -108,7 +97,6 @@ public abstract class ProjectileDeflectMixin {
             arrow.setCritArrow(true);
         }
 
-        // Cancel onHit so projectile does not damage the defender or discard itself
         ci.cancel();
     }
 }
