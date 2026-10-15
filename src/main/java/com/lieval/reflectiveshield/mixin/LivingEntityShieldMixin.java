@@ -1,13 +1,18 @@
 package com.lieval.reflectiveshield.mixin;
 
+import java.util.Optional;
+import net.minecraft.core.HolderSet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.component.BlocksAttacks;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -17,6 +22,31 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityShieldMixin {
+
+    @Shadow
+    protected abstract void blockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource damageSource, float amount, boolean hasBlocked);
+
+    @Redirect(
+        method = "applyItemBlocking",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/item/component/BlocksAttacks;bypassedBy()Ljava/util/Optional;"
+        )
+    )
+    private Optional<HolderSet<DamageType>> reflectiveShield_filterBypassedBy(
+        BlocksAttacks instance,
+        ServerLevel level,
+        DamageSource damageSource,
+        float amount
+    ) {
+        if ((Object) this instanceof Player) {
+            if ((damageSource.getEntity() != null || damageSource.getDirectEntity() != null)
+                    && !damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                return Optional.empty();
+            }
+        }
+        return instance.bypassedBy();
+    }
 
     @ModifyArg(
         method = "applyItemBlocking",
@@ -47,6 +77,12 @@ public abstract class LivingEntityShieldMixin {
                 1.0F,
                 0.8F + defender.getRandom().nextFloat() * 0.4F
             );
+
+            if ((Object) this instanceof Player && !damageSource.is(DamageTypeTags.IS_PROJECTILE)) {
+                if (!(damageSource.getDirectEntity() instanceof LivingEntity) && damageSource.getEntity() instanceof LivingEntity attacker) {
+                    this.blockUsingItem(level, attacker, damageSource, amount, cir.getReturnValue() >= amount);
+                }
+            }
         }
     }
 
