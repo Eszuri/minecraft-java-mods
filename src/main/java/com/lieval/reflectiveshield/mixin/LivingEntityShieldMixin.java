@@ -55,12 +55,32 @@ public abstract class LivingEntityShieldMixin {
         float amount
     ) {
         if ((Object) this instanceof Player) {
-            if ((damageSource.getEntity() != null || damageSource.getDirectEntity() != null)
-                    && !damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-                return Optional.empty();
+            if (!damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                if (damageSource.getEntity() != null
+                        || damageSource.getDirectEntity() != null
+                        || damageSource.is(DamageTypeTags.IS_LIGHTNING)
+                        || damageSource.is(DamageTypes.DRAGON_BREATH)
+                        || damageSource.is(DamageTypes.MAGIC)
+                        || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
+                    return Optional.empty();
+                }
             }
         }
         return instance.bypassedBy();
+    }
+
+    @Redirect(
+        method = "applyItemBlocking",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;getPierceLevel()B"
+        )
+    )
+    private byte reflectiveShield_ignorePierceLevel(AbstractArrow arrow) {
+        if ((Object) this instanceof Player) {
+            return 0;
+        }
+        return arrow.getPierceLevel();
     }
 
     @ModifyArg(

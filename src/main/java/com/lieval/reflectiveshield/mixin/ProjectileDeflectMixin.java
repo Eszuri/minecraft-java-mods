@@ -72,7 +72,7 @@ public abstract class ProjectileDeflectMixin {
         Vec3 projPos = projectile.position();
         Vec3 newVelocity;
 
-        if (shooter != null && shooter.isAlive()) {
+        if (shooter != null && shooter != defender && shooter.isAlive()) {
             Vec3 targetPos = shooter.getEyePosition().subtract(0, 0.15, 0);
             Vec3 dir = targetPos.subtract(projPos).normalize();
             newVelocity = dir.scale(speed);
