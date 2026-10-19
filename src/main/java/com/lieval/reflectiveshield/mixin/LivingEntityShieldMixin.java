@@ -17,11 +17,26 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityShieldMixin {
+
+    @Redirect(
+        method = "getItemBlockingWith",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/item/component/BlocksAttacks;blockDelayTicks()I"
+        )
+    )
+    private int reflectiveShield_instantShieldWarmup(BlocksAttacks instance) {
+        if ((Object) this instanceof Player) {
+            return 0;
+        }
+        return instance.blockDelayTicks();
+    }
 
     @Shadow
     protected abstract void blockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource damageSource, float amount, boolean hasBlocked);
